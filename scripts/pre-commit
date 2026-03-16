@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+#
+# Pre-commit hook: allow-list for public repo protection.
+# Only files matching known-safe patterns may be committed.
+# This prevents credentials, tokens, config, and other sensitive
+# files from ever reaching the public GitHub Pages repo.
+
+set -euo pipefail
+
+# Staged files that are added, copied, or modified (skip deletes).
+staged=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [ -z "$staged" ]; then
+    exit 0
+fi
+
+blocked=()
+
+while IFS= read -r file; do
+    allowed=false
+
+    case "$file" in
+        # Root-level exact files
+        CNAME|.gitignore|index.html|README.md|LICENSE)
+            allowed=true
+            ;;
+        # Root-level markdown files (no subdirectory)
+        *.md)
+            # Only allow if there is no slash (root level)
+            if [[ "$file" != */* ]]; then
+                allowed=true
+            fi
+            ;;
+        # Claude Code project instructions
+        .claude/CLAUDE.md)
+            allowed=true
+            ;;
+        # The hook itself
+        scripts/pre-commit)
+            allowed=true
+            ;;
+        # Assets with safe extensions
+        assets/*)
+            case "$file" in
+                *.css|*.js|*.jpg|*.jpeg|*.png|*.gif|*.svg|*.webp|*.ico|*.woff|*.woff2|*.ttf|*.eot)
+                    allowed=true
+                    ;;
+            esac
+            ;;
+    esac
+
+    if [ "$allowed" = false ]; then
+        blocked+=("$file")
+    fi
+done <<< "$staged"
+
+if [ ${#blocked[@]} -gt 0 ]; then
+    echo "============================================================"
+    echo "  COMMIT BLOCKED — public repo allow-list violation"
+    echo "============================================================"
+    echo ""
+    echo "This is a PUBLIC GitHub Pages repository (blue-sharp.de)."
+    echo "Only known-safe file types may be committed."
+    echo ""
+    echo "Rejected files:"
+    for f in "${blocked[@]}"; do
+        echo "  - $f"
+    done
+    echo ""
+    echo "If a file should be allowed, update the allow-list in"
+    echo "scripts/pre-commit and commit the hook first."
+    echo "============================================================"
+    exit 1
+fi
