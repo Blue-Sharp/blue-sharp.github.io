@@ -445,7 +445,36 @@ img {
 
 /*========== SKILLS AND LANGUAGES ==========*/
 .skills__content {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
+    gap: 0;
+}
+
+.skills__group-title {
+    font-size: var(--smaller-font-size);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--title-color);
+    margin-top: var(--mb-2);
+    margin-bottom: 0.5rem;
+}
+
+.skills__group-title:first-child {
+    margin-top: 0;
+}
+
+.skills__data {
+    margin-bottom: var(--mb-1);
+}
+
+.skills__data .skills__name {
+    align-items: flex-start;
+    margin-bottom: 0.35rem;
+}
+
+.skills__data .skills__circle {
+    margin-top: 0.5em;
+    flex-shrink: 0;
 }
 
 .languages__content {
@@ -489,6 +518,24 @@ img {
 
 .references__title {
     font-size: var(--h3-font-size);
+}
+
+.references__contact {
+    margin-top: 0.3rem;
+    line-height: 1.5;
+}
+
+.references__title a,
+.references__contact a {
+    border-bottom: 1px dotted var(--text-color-light);
+    transition: color 0.2s, border-bottom-color 0.2s, border-bottom-style 0.2s;
+}
+
+.references__title a:hover,
+.references__contact a:hover {
+    color: var(--title-color);
+    border-bottom-color: var(--title-color);
+    border-bottom-style: solid;
 }
 
 /*========== INTERESTS ==========*/
