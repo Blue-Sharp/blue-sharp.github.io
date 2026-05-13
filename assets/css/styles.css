@@ -668,3 +668,81 @@ img {
 #area-cv {
     min-height: 2245px;
 }
+
+/*========== PRINT (HTML→PDF render) ==========
+   Goal: produce a clean recruiter-ready PDF when the page is printed
+   (Chromium page.pdf, browser Print, etc). Without these rules the
+   floating mobile nav, the change-theme / generate-pdf buttons, and
+   uncontrolled mid-paragraph page breaks bleed into the output. */
+@media print {
+    /* Hide all UI chrome that doesn't belong on paper */
+    .l-header,
+    .nav,
+    .nav__menu,
+    .nav__toggle,
+    .nav__logo,
+    .change-theme,
+    .generate-pdf,
+    .home__button-movil {
+        display: none !important;
+    }
+
+    /* Reset fixed-position elements so flow content can use the full page */
+    body, html {
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+    /* Tighten typography and remove on-screen padding meant for the nav bar */
+    .bd-container {
+        padding: 0 !important;
+        max-width: none !important;
+    }
+
+    main, .l-main {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Avoid orphaned headings or split list items / experience cards */
+    h1, h2, h3, .section-title {
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+
+    .education__content,
+    .experience__content,
+    .certificate__content,
+    .references__content,
+    .interests__content,
+    .skills__content,
+    .home__data {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    /* Section start on a fresh page where it makes sense */
+    #experience,
+    #certificates,
+    #publications,
+    #references {
+        page-break-before: auto;
+        break-before: auto;
+    }
+
+    /* Print-only margin bump so timeline rounds don't kiss the page edge */
+    .section {
+        padding: 0.6rem 0 !important;
+    }
+
+    /* Make sure links print as readable text instead of light grey */
+    a, a:visited {
+        color: #000 !important;
+        text-decoration: none !important;
+    }
+
+    /* Re-flow the home block — the on-screen 2-col grid is too wide for A4 */
+    .home__container {
+        grid-template-columns: 1fr !important;
+    }
+}
